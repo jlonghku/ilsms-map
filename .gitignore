@@ -1,0 +1,6 @@
+web/node_modules/
+web/dist/
+site/assets/
+site/index.html
+site/landsd-logo.jpg
+.DS_Store

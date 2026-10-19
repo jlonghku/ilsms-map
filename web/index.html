@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#14766c" />
+    <title>ILSMS · 香港城市排水</title>
+  </head>
+  <body>
+    <header class="app-header">
+      <button
+        class="icon mobile-only"
+        id="menu"
+        aria-label="图层面板"
+        title="图层面板"
+      >
+        <i data-lucide="panel-left"></i>
+      </button>
+      <a class="brand" href="./" aria-label="ILSMS 首页"
+        ><i data-lucide="network"></i><strong>ILSMS</strong
+        ><span>香港城市排水</span></a
+      >
+      <nav class="regions" aria-label="地图区域">
+        <button data-region="hk">全港</button
+        ><button data-region="kowloon" class="active">九龙</button
+        ><button data-region="island">港岛</button
+        ><button data-region="nt">新界</button>
+      </nav>
+      <span class="local-status"><span></span>本地数据</span>
+      <button
+        class="icon"
+        id="export"
+        title="导出地图 PNG"
+        aria-label="导出地图 PNG"
+      >
+        <i data-lucide="download"></i>
+      </button>
+    </header>
+    <main>
+      <aside id="sidebar" aria-label="地图控制">
+        <div class="tabs" role="tablist">
+          <button
+            id="network-tab"
+            role="tab"
+            aria-selected="true"
+            class="active"
+          >
+            管网</button
+          ><button id="events-tab" role="tab" aria-selected="false">
+            事件回放
+          </button>
+        </div>
+        <section
+          id="network-panel"
+          role="tabpanel"
+          aria-labelledby="network-tab"
+        >
+          <div class="section-label">
+            网络模型 <span class="tag">全港 · 修复版</span>
+          </div>
+          <div class="segments" id="system" aria-label="管网系统">
+            <button data-value="stormwater" class="active" aria-pressed="true">
+              雨水 / 合流</button
+            ><button data-value="sewage" aria-pressed="false">污水</button>
+          </div>
+          <label class="field"
+            >模型精度<select id="level">
+              <option value="full" selected>完整 · Full</option>
+              <option value="engineering">工程 · Engineering</option>
+              <option value="screening">筛查 · Screening</option>
+            </select></label
+          >
+          <div class="stats">
+            <div><strong id="link-count">—</strong><span>管段</span></div>
+            <div><strong id="length">—</strong><span>总长 km</span></div>
+            <div><strong id="outfalls">—</strong><span>公布出水口</span></div>
+          </div>
+          <div class="search-wrap">
+            <i data-lucide="search"></i
+            ><input
+              id="search"
+              aria-label="搜索管段资产编号"
+              placeholder="搜索管段编号"
+              autocomplete="off"
+              disabled
+            /><button
+              class="icon"
+              id="clear-search"
+              title="清空搜索"
+              aria-label="清空搜索"
+            >
+              <i data-lucide="x"></i>
+            </button>
+          </div>
+          <div id="search-results" aria-live="polite"></div>
+          <div class="section-label divider">图层</div>
+          <label class="toggle-row"
+            ><span><b class="line-swatch pipe"></b>管道</span
+            ><input type="checkbox" id="show-pipes" checked
+          /></label>
+          <label class="toggle-row"
+            ><span><b class="line-swatch channel"></b>水渠 / 箱涵</span
+            ><input type="checkbox" id="show-channels" checked
+          /></label>
+          <label class="toggle-row"
+            ><span><b class="line-swatch inferred"></b>推测连接</span
+            ><input type="checkbox" id="show-inferred" checked
+          /></label>
+          <label class="toggle-row"
+            ><span><b class="dot-swatch"></b>公布出水口</span
+            ><input type="checkbox" id="show-outfalls" checked
+          /></label>
+          <label class="toggle-row"
+            ><span><b class="square-swatch"></b>模型边界</span
+            ><input type="checkbox" id="show-boundaries"
+          /></label>
+          <label class="field compact"
+            >着色<select id="color-mode">
+              <option value="asset">构件类型</option>
+              <option value="diameter">宽度 / 管径</option>
+              <option value="slope">重建坡度</option>
+            </select></label
+          >
+          <label class="range-row" for="opacity"
+            >管网透明度<input
+              id="opacity"
+              type="range"
+              min="15"
+              max="100"
+              value="90"
+            /><output id="opacity-value">90%</output></label
+          >
+          <label class="toggle-row"><span>追踪至最终排水口</span><input type="checkbox" id="auto-trace" checked /></label>
+          <label class="toggle-row"><span>流向动画</span><input type="checkbox" id="animate-flow" checked /></label>
+        </section>
+        <section
+          id="events-panel"
+          hidden
+          role="tabpanel"
+          aria-labelledby="events-tab"
+        >
+          <div class="section-label">
+            模拟结果 <span class="tag">已保存</span>
+          </div>
+          <label class="field">案例<select id="event"></select></label>
+          <div id="event-meta" class="event-meta"></div>
+          <div id="acceptance" class="acceptance"></div>
+          <label class="field">结果变量<select id="metric"></select></label>
+          <label class="range-row" for="result-opacity"
+            >结果透明度<input
+              id="result-opacity"
+              type="range"
+              min="10"
+              max="100"
+              value="85"
+            /><output id="result-opacity-value">85%</output></label
+          >
+          <label class="toggle-row"
+            ><span>显示模拟结果</span
+            ><input type="checkbox" id="show-results" checked
+          /></label>
+          <label class="toggle-row"
+            ><span>假设面源范围</span
+            ><input type="checkbox" id="show-spill" checked
+          /></label>
+          <button class="command" id="fit-event">
+            <i data-lucide="scan"></i>定位案例
+          </button>
+          <details class="provenance">
+            <summary>数据来源与边界</summary>
+            <div id="event-provenance"></div>
+          </details>
+        </section>
+        <section class="selection-section">
+          <div class="section-label">
+            构件详情<button
+              class="icon small"
+              id="clear-selection"
+              title="取消选中"
+              aria-label="取消选中"
+            >
+              <i data-lucide="x"></i>
+            </button>
+          </div>
+          <div id="selection">
+            <div class="empty-selection">
+              <i data-lucide="mouse-pointer-2"></i><span>尚未选择构件</span>
+            </div>
+          </div>
+        </section>
+        <footer class="sidebar-footer">
+          CSDI · DSD / HyD · HK1980<br /><span id="source-label"
+            >conservative_city_resolved</span
+          >
+        </footer>
+      </aside>
+      <div id="map" aria-label="香港管网地图"></div>
+      <div class="map-heading">
+        <span class="eyebrow">HONG KONG · DRAINAGE</span>
+        <h1 id="map-title">九龙雨水管网</h1>
+        <span id="map-subtitle">完整模型 · 修复拓扑</span>
+      </div>
+      <div class="basemap-control">
+        <i data-lucide="layers"></i>
+        <label for="basemap">底图</label>
+        <select id="basemap" aria-label="底图">
+          <option value="terrain">DEM · 离线</option>
+          <option value="street">香港街道 · 在线</option>
+          <option value="dark">深色街道 · 在线</option>
+          <option value="imagery">航拍影像 · 在线</option>
+        </select>
+      </div>
+      <div class="map-tools">
+        <button class="icon" id="zoom-in" title="放大" aria-label="放大">
+          <i data-lucide="plus"></i></button
+        ><button class="icon" id="zoom-out" title="缩小" aria-label="缩小">
+          <i data-lucide="minus"></i></button
+        ><button class="icon" id="home" title="全港视野" aria-label="全港视野">
+          <i data-lucide="scan"></i></button
+        ><button class="icon" id="north" title="朝向正北" aria-label="朝向正北">
+          <i data-lucide="navigation"></i>
+        </button>
+      </div>
+      <div id="map-status" role="status">
+        <span class="spinner"></span>正在加载地图
+      </div>
+      <div id="notice" role="alert" hidden></div>
+      <div id="legend" class="legend"></div>
+      <div id="route-status" class="route-status" hidden aria-live="polite">
+        <span class="route-mark"></span>
+        <div><strong id="route-title"></strong><span id="route-meta"></span></div>
+        <button class="icon" id="route-play" title="暂停流向动画" aria-label="暂停流向动画"><i data-lucide="pause"></i></button>
+        <button class="icon" id="fit-route" title="完整路径" aria-label="完整路径"><i data-lucide="scan"></i></button>
+        <button class="icon" id="close-route" title="取消路径" aria-label="取消路径"><i data-lucide="x"></i></button>
+      </div>
+      <a id="landsd-credit" href="https://www.landsd.gov.hk/" target="_blank" rel="noopener" hidden>
+        <img src="/landsd-logo.jpg" width="25" height="25" alt="Lands Department" />
+        <span id="landsd-credit-text">Map from Lands Department</span>
+      </a>
+      <div id="timeline" class="timeline" hidden>
+        <button class="icon" id="play" title="播放" aria-label="播放">
+          <i data-lucide="play"></i>
+        </button>
+        <div class="time-value">
+          <span>模拟时间</span><strong id="time-value">00:00:00</strong>
+        </div>
+        <div class="time-track">
+          <input
+            id="time"
+            aria-label="模拟时刻"
+            type="range"
+            min="0"
+            max="0"
+            value="0"
+          />
+          <div><span>00:00</span><span id="time-end">—</span></div>
+        </div>
+        <select id="speed" aria-label="回放速度" title="回放速度">
+          <option value="1500">1×</option>
+          <option value="750">2×</option>
+          <option value="375">4×</option>
+        </select>
+      </div>
+      <div class="map-footer">
+        <span id="coordinates">114.180° E · 22.320° N</span
+        ><span id="privacy-status">管网与结果仅在本机读取 · 离线底图</span>
+      </div>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

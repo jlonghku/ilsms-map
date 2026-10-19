@@ -1,0 +1,17 @@
+{
+  "name": "ilsms-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "lucide": "1.59.0",
+    "maplibre-gl": "6.15.0"
+  },
+  "devDependencies": {
+    "vite": "8.3.4"
+  }
+}
