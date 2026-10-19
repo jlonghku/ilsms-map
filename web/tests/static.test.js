@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {gzipSync} from 'node:zlib';
-import {prepareGraph, walkGraph, traceResult, readPacked} from '../src/static-data.js';
+import {prepareGraph, walkGraph, traceResult, readPacked, readJSON} from '../src/static-data.js';
 
 function graph(from, to, terminals = {}) {
   return prepareGraph({format: 1, nodes: Array.from({length: Math.max(...from, ...to) + 1}, (_, i) => `N${i}`),
@@ -56,4 +56,14 @@ test('gzip files work with or without server-side content decoding', async () =>
     const result = await readPacked(`data:application/octet-stream;base64,${bytes.toString('base64')}`);
     assert.equal(new TextDecoder().decode(result), body);
   }
+});
+test('the publication catalog can revalidate while versioned data stays cached', async (t) => {
+  const caches = [];
+  t.mock.method(globalThis, 'fetch', async (_, options) => {
+    caches.push(options.cache);
+    return new Response(JSON.stringify({format: 2}));
+  });
+  assert.deepEqual(await readJSON('https://example.com/catalog.json', 'no-cache'), {format: 2});
+  await readJSON('https://example.com/data/versioned/graph.json.gz');
+  assert.deepEqual(caches, ['no-cache', 'default']);
 });

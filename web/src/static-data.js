@@ -1,6 +1,6 @@
 // Static files are gzip payloads, independent of the host's Content-Encoding headers.
-export async function readPacked(url, signal) {
-  const response = await fetch(url, { signal });
+export async function readPacked(url, signal, cache = 'default') {
+  const response = await fetch(url, { signal, cache });
   if (!response.ok) throw new Error(`HTTP ${response.status}: ${new URL(url).pathname}`);
   const bytes = new Uint8Array(await response.arrayBuffer());
   if (bytes[0] !== 31 || bytes[1] !== 139) return bytes.buffer;
@@ -8,8 +8,8 @@ export async function readPacked(url, signal) {
   return new Response(stream).arrayBuffer();
 }
 
-export async function readJSON(url) {
-  return JSON.parse(new TextDecoder().decode(await readPacked(url)));
+export async function readJSON(url, cache = 'default') {
+  return JSON.parse(new TextDecoder().decode(await readPacked(url, undefined, cache)));
 }
 
 export function prepareGraph(graph) {

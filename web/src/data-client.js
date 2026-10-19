@@ -7,7 +7,7 @@ let worker, serial = 0;
 const pending = new Map(), tileIndexes = new Map();
 
 export async function staticRequest(path, signal) {
-  if (path === '/api/catalog') return readJSON(absolute('catalog.json'));
+  if (path === '/api/catalog') return readJSON(absolute('catalog.json'), 'no-cache');
   if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
   if (!worker) {
     worker = new Worker(new URL('./static-worker.js', import.meta.url), {type: 'module'});

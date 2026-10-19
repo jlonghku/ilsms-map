@@ -25,7 +25,8 @@ async function featureAt(base, graph, fid) {
   return features[fid];
 }
 export async function request(root, path) {
-  catalogPromise ||= readJSON(new URL('catalog.json', root));
+  catalogPromise ||= readJSON(new URL('catalog.json', root), 'no-cache')
+    .catch(error => {catalogPromise = null; throw error;});
   const catalog = await catalogPromise;
   const url = new URL(path, root);
   const match = url.pathname.match(/^\/api\/network\/(stormwater|sewage)\/(full|engineering|screening)\/(search|feature\/\d+|trace\/\d+)$/);
