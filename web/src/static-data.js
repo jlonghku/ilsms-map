@@ -13,7 +13,7 @@ export async function readJSON(url) {
 }
 
 export function prepareGraph(graph) {
-  if (graph.format !== 1) throw new Error('Unsupported static data version');
+  if (![1, 2].includes(graph.format)) throw new Error('Unsupported static data version; reload the map');
   graph.positions = new Map(graph.fids.map((fid, i) => [fid, i]));
   graph.byName = new Map();
   graph.downstream = new Map();
